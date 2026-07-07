@@ -2,7 +2,7 @@ import os
 
 import requests
 
-from kindle_summary_agent.models import Book, Highlight
+from kindle_summary_agent.domain.models import Book, Highlight
 
 BASE_URL = "https://readwise.io/api/v2"
 

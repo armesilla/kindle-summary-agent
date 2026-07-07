@@ -1,4 +1,4 @@
-from kindle_summary_agent.readwise import ReadwiseClient
+from kindle_summary_agent.clients.readwise import ReadwiseClient
 
 
 def main() -> None:
