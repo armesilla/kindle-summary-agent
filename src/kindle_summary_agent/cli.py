@@ -13,7 +13,7 @@ def main() -> None:
     print(f"📚 Libros encontrados: {len(books)}")
 
     for book in books[:5]:
-        print(f"- {book['title']}")
+        print(f"- {book.title} ({book.highlight_count} highlights)")
 
 
 if __name__ == "__main__":
