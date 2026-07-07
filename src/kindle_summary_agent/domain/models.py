@@ -17,3 +17,9 @@ class Book:
     @property
     def highlight_count(self) -> int:
         return len(self.highlights)
+
+
+@dataclass
+class BookDocument:
+    book: Book
+    summary: str
