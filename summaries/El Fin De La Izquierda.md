@@ -7,7 +7,7 @@
 
 ## Resumen de mis notas
 
-Resumen pendiente de generar con IA.
+Resumen pendiente de generar con IA. El prompt ya está preparado correctamente.
 
 ## Highlights
 
