@@ -15,6 +15,7 @@ authors = [
 
 dependencies = [
   "requests",
+  "openai",
 ]
 
 [project.optional-dependencies]

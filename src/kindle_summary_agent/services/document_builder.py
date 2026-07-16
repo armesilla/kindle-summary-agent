@@ -3,13 +3,15 @@ from kindle_summary_agent.services.summarizer import Summarizer
 
 
 class BookDocumentBuilder:
-    def __init__(self):
+    def __init__(self) -> None:
         self.summarizer = Summarizer()
 
     def build(self, book: Book) -> BookDocument:
-        summary = self.summarizer.summarize(book)
+        generated = self.summarizer.summarize(book)
 
         return BookDocument(
             book=book,
-            summary=summary,
+            summary=generated.summary,
+            key_ideas=generated.key_ideas,
+            key_concepts=generated.key_concepts,
         )

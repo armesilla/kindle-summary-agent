@@ -1,17 +1,21 @@
 from pathlib import Path
 
+from kindle_summary_agent.clients.llm import LLMClient, SummaryOutput
 from kindle_summary_agent.domain.models import Book
 
 PROMPT_PATH = Path(__file__).parent.parent / "prompts" / "summary.md"
 
 
 class Summarizer:
-    def __init__(self):
+    def __init__(self) -> None:
         self.prompt_template = PROMPT_PATH.read_text(encoding="utf-8")
+        self.llm = LLMClient()
 
-    def summarize(self, book: Book) -> str:
+    def summarize(self, book: Book) -> SummaryOutput:
         highlights = "\n".join(
-            f"- {highlight.text}" for highlight in book.highlights if highlight.text
+            self._render_highlight(highlight)
+            for highlight in book.highlights
+            if highlight.text
         )
 
         prompt = self.prompt_template.format(
@@ -20,10 +24,12 @@ class Summarizer:
             highlights=highlights,
         )
 
-        return self._fake_ai_response(prompt)
+        return self.llm.generate_summary(prompt)
 
-    def _fake_ai_response(self, prompt: str) -> str:
-        return (
-            "Resumen pendiente de generar con IA. "
-            "El prompt ya está preparado correctamente."
-        )
+    def _render_highlight(self, highlight) -> str:
+        content = f"- {highlight.text}"
+
+        if highlight.note:
+            content += f"\n  Nota del lector: {highlight.note}"
+
+        return content

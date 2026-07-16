@@ -23,3 +23,5 @@ class Book:
 class BookDocument:
     book: Book
     summary: str
+    key_ideas: list[str] = field(default_factory=list)
+    key_concepts: list[str] = field(default_factory=list)
