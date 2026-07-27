@@ -7,41 +7,44 @@
 
 ## Resumen
 
-El libro analiza el proyecto del Gobierno socialista de Salvador Allende en Chile (1970-1973) para implementar un cambio socialista pacífico mediante instituciones democráticas, apoyándose en la tecnología informática. Un grupo del Gobierno, junto al cibernetista británico Stafford Beer y el ingeniero chileno Fernando Flores, desarrollaron el sistema Synco, que buscaba administrar la economía nacionalizada en tiempo real mediante una red computacional y estadística para anticipar crisis y mejorar la gerencia industrial. Este esfuerzo reflejaba la 'ingeniería sociotécnica', donde la tecnología está ligada a negociaciones sociales y objetivos políticos. Beer aplicó sus modelos cibernéticos - Máquina de la Libertad y Modelo de Sistema Viable - que promovían control entendido como autorregulación y homeostasis, balanceando autonomía y cohesión dentro del sistema económico y político. La CORFO, institución clave en la nacionalización, mostró la necesidad de evolucionar hacia una gestión dinámica centrada en decisiones diarias, no solo planificación a largo plazo. Chile contaba con una experiencia previa computacional estatal, aunque limitada en recursos tecnológicos, con empresas como IBM establecidas desde 1929, y una creciente centralización computacional estatal que facilitó el acceso para Synco. La colaboración entre Beer y el Gobierno chileno simbolizó un intento innovador de combinar tecnología y política para gestionar el proceso revolucionario mediante un sistema cibernético adaptativo y democrático.
+El libro describe la colaboración entre el Gobierno socialista de Salvador Allende en Chile y el cibernetista británico Stafford Beer para crear un sistema computacional innovador, conocido como Synco, destinado a administrar la economía nacionalizada en tiempo real mediante la cibernética de gerencia. Este proyecto buscaba preservar la estabilidad organizacional y facilitar cambios revolucionarios, conciliando la autonomía y la cohesión en las empresas estatales. La propuesta se fundamentaba en conceptos cibernéticos como la homeostasis, la ley de la variedad requerida, y el Modelo de Sistema Viable, en los cuales Beer relacionaba la gestión empresarial con organismos vivos adaptativos. La implementación tecnológica se apoyó en la experiencia previa del Estado chileno en computación gubernamental, la centralización de recursos computacionales bajo instituciones como CORFO y EMCO, y contó con la participación de un equipo técnico integrado por miembros del MAPU y expertos en investigación operativa. El contexto político incluyó la política de nacionalización de sectores claves como la minería y la banca, así como la tensión del modelo socialista democrático que Allende pretendía consolidar. El proyecto Synco representó un intento precursor y singular de integrar tecnología, administración y política para el desarrollo económico y social de Chile antes del golpe militar contra Allende.
 
 ## Ideas principales
 
-- El Gobierno de Allende propuso un cambio socialista pacífico respetando procesos democráticos.
-- Un grupo gubernamental, con Beers y Flores, diseñó Synco, un sistema computacional para administrar en tiempo real la economía nacionalizada.
-- La tecnología no es neutral sino producto de contextos sociales y políticos, implicando la ingeniería sociotécnica.
-- Beer desarrolló modelos cibernéticos que entendían el control como autorregulación y estabilidad homeostática, equilibrando autonomía y cohesión.
-- Synco incluía una sala de operaciones para seguimiento y toma de decisiones rápidas sobre la economía.
-- CORFO necesitaba transformarse en una agencia de gestión activa para enfrentar retos de la nacionalización.
-- Chile tenía experiencia previa en computación estatal, pero con recursos limitados y tecnología de rango medio.
-- El Estado centralizó el control computacional durante el gobierno de Allende, facilitando el acceso a tecnología para Synco.
-- La colaboración entre técnicos y el Gobierno chileno reflejó un intento de articular tecnología y procesos políticos para gestionar la revolución.
-- El proyecto enfrentaba desafíos derivados de la complejidad económica y la participación creciente de los trabajadores en la gestión empresarial.
+- En 1970, Chile eligió democráticamente a Salvador Allende para implementar un cambio socialista pacífico respetando las instituciones.
+- Un grupo del gobierno chileno colaboró con el cibernetista Stafford Beer para diseñar un sistema computacional (Synco) que gerenciara la economía nacionalizada en tiempo real.
+- Synco empleaba tecnologías no necesariamente modernas y buscaba crear una sala de operaciones para monitorear la economía y facilitar decisiones oportunas.
+- La cibernética de gerencia propuesta por Beer relacionaba el control con la autorregulación y la adaptación, empleando conceptos como homeostasis y la ley de la variedad requerida.
+- El Modelo de Sistema Viable y la Máquina de la Libertad de Beer proponían sistemas organizacionales capaces de equilibrio entre centralización y descentralización adaptativa.
+- El sistema tomó ventaja de la fuerte centralización estatal de recursos computacionales chilenos y la experiencia previa del Estado en tecnologías de información.
+- La Corporación de Fomento de la Producción (CORFO) fue central en la nacionalización y gerencia de la industria, cambiando su enfoque hacia la toma diaria de decisiones y prestaciones operativas.
+- El proceso político y la administración socialista enfrentaron desafíos derivados del aumento de la participación laboral y la administración de industrias estatales crecientes.
+- El equipo técnico de Synco incluía expertos y militantes del MAPU vinculados a CORFO e instituciones académicas.
+- El proyecto reflejó una ingeniería sociotécnica que integraba la tecnología con objetivos políticos y sociales del socialismo democrático chileno.
+- El contexto socio-político incluía la profundización de la nacionalización, la expansión del sector público y la preocupación por cambios estructurales sostenibles.
+- El proyecto no solo implicó avances técnicos sino también un análisis sociopolítico de cómo la tecnología puede apoyar procesos revolucionarios dentro de marcos democráticos.
 
 ## Conceptos clave
 
 - Salvador Allende
-- Unidad Popular
+- Unidad Popular (UP)
 - Stafford Beer
-- Fernando Flores
 - Synco
-- CORFO
 - cibernética de gerencia
-- Máquina de la Libertad
-- Modelo de Sistema Viable
 - homeostasis
-- control adaptativo
+- ley de la variedad requerida
+- Modelo de Sistema Viable
+- Máquina de la Libertad
+- CORFO
+- Empresa Nacional de Computación (ECOM)
+- IBM System/360
 - ingeniería sociotécnica
-- IBM Chile
-- Empresa Nacional de Computación
 - nacionalización
+- participación laboral
 - centralización computacional
-- Chile 1970-1973
-- gestión económica socialista
+- revolución socialista democrática
+- Fernando Flores
+- MAPU
 
 ## Highlights
 
