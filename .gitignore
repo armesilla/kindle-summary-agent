@@ -29,3 +29,6 @@ htmlcov/
 
 # Local synchronization state
 .state/
+
+# Generated summaries
+summaries/
