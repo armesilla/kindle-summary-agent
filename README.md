@@ -4,6 +4,9 @@
 >
 > Read. Highlight. Let the agent do the rest.
 
+<img width="1672" height="941" alt="ChatGPT Image 31 jul 2026, 23_53_22" src="https://github.com/user-attachments/assets/af3f023c-4c17-4261-91e5-9ca9e7489ba3" />
+
+
 Kindle Summary Agent is an open-source tool that transforms your Kindle highlights into structured AI-powered summaries and publishes them directly to your knowledge system.
 
 Instead of manually exporting highlights, crafting prompts and organizing notes, simply read as you always do. Kindle Summary Agent automates everything that happens after you finish a book.
@@ -13,6 +16,9 @@ Instead of manually exporting highlights, crafting prompts and organizing notes,
 ## ✨ Why Kindle Summary Agent?
 
 Reading a great book should leave you with knowledge, not extra work.
+
+<img width="1672" height="941" alt="ChatGPT Image 31 jul 2026, 23_53_09" src="https://github.com/user-attachments/assets/29e1d87f-0932-4606-a521-1ee5bc694567" />
+
 
 Most readers end up following the same repetitive workflow:
 
@@ -186,6 +192,9 @@ This command:
 If multiple books match the query, the application asks for a more specific title.
 
 ---
+
+<img width="1448" height="1086" alt="ChatGPT Image 31 jul 2026, 23_53_02" src="https://github.com/user-attachments/assets/ee05a51b-1b95-48cd-a333-69a7c1921436" />
+
 
 # 📄 Output
 
