@@ -1,16 +1,37 @@
 [build-system]
-requires = ["setuptools>=69"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "kindle-summary-agent"
-version = "0.1.0"
-description = "Generate AI-powered book summaries from Readwise highlights and publish them to Craft."
+version = "1.0.0"
+description = "Transform Readwise highlights into structured AI-powered summaries and publish them to Markdown and Craft."
 readme = "README.md"
 requires-python = ">=3.12"
-license = { text = "MIT" }
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [
   { name = "armesilla" }
+]
+keywords = [
+  "kindle",
+  "readwise",
+  "highlights",
+  "summaries",
+  "openai",
+  "craft",
+  "markdown",
+  "knowledge-management",
+]
+
+classifiers = [
+  "Intended Audience :: End Users/Desktop",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Text Processing",
+  "Topic :: Utilities",
 ]
 
 dependencies = [
@@ -22,6 +43,23 @@ dependencies = [
 dev = [
   "pytest",
   "ruff",
+]
+
+[project.scripts]
+kindle-summary-agent = "kindle_summary_agent.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/armesilla/armesilla-kindle-summary-agent"
+Repository = "https://github.com/armesilla/armesilla-kindle-summary-agent"
+Issues = "https://github.com/armesilla/armesilla-kindle-summary-agent/issues"
+Documentation = "https://github.com/armesilla/armesilla-kindle-summary-agent#readme"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+kindle_summary_agent = [
+  "prompts/*.md",
 ]
 
 [tool.ruff]
