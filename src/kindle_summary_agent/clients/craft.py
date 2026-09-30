@@ -1,13 +1,20 @@
+import os
 from typing import Any
 
 import requests
 
-from kindle_summary_agent.config import CRAFT_API_URL
-
 
 class CraftClient:
-    def __init__(self, api_url: str = CRAFT_API_URL) -> None:
-        self.api_url = api_url.rstrip("/")
+    def __init__(
+        self,
+        api_url: str | None = None,
+    ) -> None:
+        resolved_api_url = api_url or os.getenv("CRAFT_API_URL")
+
+        if not resolved_api_url:
+            raise ValueError("Missing CRAFT_API_URL")
+
+        self.api_url = resolved_api_url.rstrip("/")
 
     # -------------------------------------------------------------------------
     # Folders

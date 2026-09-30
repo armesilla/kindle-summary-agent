@@ -1,7 +1,7 @@
+import os
 from typing import Any
 
 from kindle_summary_agent.clients.craft import CraftClient
-from kindle_summary_agent.config import CRAFT_FOLDER_NAME
 from kindle_summary_agent.domain.models import BookDocument, Highlight
 
 
@@ -9,10 +9,15 @@ class CraftPublisher:
     def __init__(
         self,
         client: CraftClient | None = None,
-        folder_name: str = CRAFT_FOLDER_NAME,
+        folder_name: str | None = None,
     ) -> None:
+        resolved_folder_name = folder_name or os.getenv(
+            "CRAFT_FOLDER_NAME",
+            "Base de conocimiento",
+        )
+
         self.client = client or CraftClient()
-        self.folder_name = folder_name
+        self.folder_name = resolved_folder_name
 
     def publish(self, document: BookDocument) -> dict[str, Any]:
         folder = self.client.find_folder_by_name(self.folder_name)
@@ -30,7 +35,9 @@ class CraftPublisher:
         )
 
         if len(matches) > 1:
-            raise RuntimeError(f"Multiple Craft documents found with title: {title}")
+            raise RuntimeError(
+                f"Multiple Craft documents found with title: {title}"
+            )
 
         if matches:
             craft_document = matches[0]
@@ -72,7 +79,9 @@ class CraftPublisher:
 
         key_ideas = "\n".join(f"- {idea}" for idea in document.key_ideas)
 
-        key_concepts = "\n".join(f"- {concept}" for concept in document.key_concepts)
+        key_concepts = "\n".join(
+            f"- {concept}" for concept in document.key_concepts
+        )
 
         highlights = "\n".join(
             self._render_highlight(highlight)

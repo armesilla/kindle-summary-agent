@@ -247,3 +247,14 @@ def test_uses_unknown_author_when_author_is_missing() -> None:
 
     assert "- Autor: Desconocido" in markdown
     assert "- Highlights: 1" in markdown
+
+
+def test_uses_folder_name_passed_to_constructor() -> None:
+    client = Mock()
+
+    publisher = CraftPublisher(
+        client=client,
+        folder_name="My Craft Folder",
+    )
+
+    assert publisher.folder_name == "My Craft Folder"
