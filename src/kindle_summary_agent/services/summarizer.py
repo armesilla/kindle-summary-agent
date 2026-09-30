@@ -7,9 +7,12 @@ PROMPT_PATH = Path(__file__).parent.parent / "prompts" / "summary.md"
 
 
 class Summarizer:
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        llm: LLMClient | None = None,
+    ) -> None:
         self.prompt_template = PROMPT_PATH.read_text(encoding="utf-8")
-        self.llm = LLMClient()
+        self.llm = llm or LLMClient()
 
     def summarize(self, book: Book) -> SummaryOutput:
         highlights = "\n".join(

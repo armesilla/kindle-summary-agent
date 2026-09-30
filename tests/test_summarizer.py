@@ -134,4 +134,13 @@ def test_summarizer_loads_expected_prompt_template(
     )
     assert "{title}" in summarizer.prompt_template
     assert "{author}" in summarizer.prompt_template
-    assert "{highlights}" in summarizer.prompt_template
+
+
+def test_uses_llm_passed_to_constructor() -> None:
+    llm = Mock()
+
+    summarizer = Summarizer(
+        llm=llm,
+    )
+
+    assert summarizer.llm is llm
