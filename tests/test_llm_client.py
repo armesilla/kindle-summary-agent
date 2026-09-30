@@ -18,6 +18,22 @@ def test_raises_error_when_openai_api_key_is_missing(
 
 
 @patch("kindle_summary_agent.clients.llm.OpenAI")
+def test_uses_api_key_passed_to_constructor(
+    mock_openai_class: Mock,
+) -> None:
+    client = LLMClient(
+        api_key="constructor-api-key",
+    )
+
+    mock_openai_class.assert_called_once_with(
+        api_key="constructor-api-key",
+    )
+
+    assert client.client is mock_openai_class.return_value
+    assert client.model == "gpt-4.1-mini"
+
+
+@patch("kindle_summary_agent.clients.llm.OpenAI")
 def test_creates_openai_client_with_environment_api_key(
     mock_openai_class: Mock,
     monkeypatch: pytest.MonkeyPatch,
@@ -40,14 +56,9 @@ def test_creates_openai_client_with_environment_api_key(
 @patch("kindle_summary_agent.clients.llm.OpenAI")
 def test_uses_custom_model(
     mock_openai_class: Mock,
-    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv(
-        "OPENAI_API_KEY",
-        "test-api-key",
-    )
-
     client = LLMClient(
+        api_key="test-api-key",
         model="gpt-test-model",
     )
 
@@ -57,13 +68,7 @@ def test_uses_custom_model(
 @patch("kindle_summary_agent.clients.llm.OpenAI")
 def test_generate_summary_returns_structured_output(
     mock_openai_class: Mock,
-    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv(
-        "OPENAI_API_KEY",
-        "test-api-key",
-    )
-
     generated = SummaryOutput(
         summary="A structured summary.",
         key_ideas=[
@@ -83,6 +88,7 @@ def test_generate_summary_returns_structured_output(
     mock_openai_client.responses.parse.return_value = response
 
     client = LLMClient(
+        api_key="test-api-key",
         model="gpt-test-model",
     )
 
@@ -102,20 +108,16 @@ def test_generate_summary_returns_structured_output(
 @patch("kindle_summary_agent.clients.llm.OpenAI")
 def test_generate_summary_raises_error_when_output_is_missing(
     mock_openai_class: Mock,
-    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv(
-        "OPENAI_API_KEY",
-        "test-api-key",
-    )
-
     response = Mock()
     response.output_parsed = None
 
     mock_openai_client = mock_openai_class.return_value
     mock_openai_client.responses.parse.return_value = response
 
-    client = LLMClient()
+    client = LLMClient(
+        api_key="test-api-key",
+    )
 
     with pytest.raises(
         RuntimeError,

@@ -17,13 +17,17 @@ class SummaryOutput(BaseModel):
 
 
 class LLMClient:
-    def __init__(self, model: str = "gpt-4.1-mini") -> None:
-        api_key = os.getenv("OPENAI_API_KEY")
+    def __init__(
+        self,
+        api_key: str | None = None,
+        model: str = "gpt-4.1-mini",
+    ) -> None:
+        resolved_api_key = api_key or os.getenv("OPENAI_API_KEY")
 
-        if not api_key:
+        if not resolved_api_key:
             raise ValueError("Missing OPENAI_API_KEY")
 
-        self.client = OpenAI(api_key=api_key)
+        self.client = OpenAI(api_key=resolved_api_key)
         self.model = model
 
     def generate_summary(self, prompt: str) -> SummaryOutput:
