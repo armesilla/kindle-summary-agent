@@ -18,10 +18,15 @@ class SyncService:
     ) -> None:
         self.readwise_client = readwise_client or ReadwiseClient()
         self.document_builder = document_builder or BookDocumentBuilder()
-        self.publishers = publishers or [
-            MarkdownPublisher(),
-            CraftPublisher(),
-        ]
+
+        if publishers is None:
+            self.publishers = [
+                MarkdownPublisher(),
+                CraftPublisher(),
+            ]
+        else:
+            self.publishers = publishers
+
         self.sync_state = sync_state or SyncState()
 
     def run(self) -> int:
