@@ -41,3 +41,13 @@ def test_build_creates_book_document(mock_summarizer_class: Mock) -> None:
     assert document.summary == generated.summary
     assert document.key_ideas == generated.key_ideas
     assert document.key_concepts == generated.key_concepts
+
+
+def test_uses_summarizer_passed_to_constructor() -> None:
+    summarizer = Mock()
+
+    builder = BookDocumentBuilder(
+        summarizer=summarizer,
+    )
+
+    assert builder.summarizer is summarizer
