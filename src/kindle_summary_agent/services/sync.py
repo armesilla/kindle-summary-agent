@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 
 from kindle_summary_agent.clients.readwise import ReadwiseClient
+from kindle_summary_agent.publishers.base import Publisher
 from kindle_summary_agent.publishers.craft import CraftPublisher
 from kindle_summary_agent.publishers.markdown import MarkdownPublisher
 from kindle_summary_agent.services.document_builder import BookDocumentBuilder
@@ -12,14 +13,15 @@ class SyncService:
         self,
         readwise_client: ReadwiseClient | None = None,
         document_builder: BookDocumentBuilder | None = None,
-        markdown_publisher: MarkdownPublisher | None = None,
-        craft_publisher: CraftPublisher | None = None,
+        publishers: list[Publisher] | None = None,
         sync_state: SyncState | None = None,
     ) -> None:
         self.readwise_client = readwise_client or ReadwiseClient()
         self.document_builder = document_builder or BookDocumentBuilder()
-        self.markdown_publisher = markdown_publisher or MarkdownPublisher()
-        self.craft_publisher = craft_publisher or CraftPublisher()
+        self.publishers = publishers or [
+            MarkdownPublisher(),
+            CraftPublisher(),
+        ]
         self.sync_state = sync_state or SyncState()
 
     def run(self) -> int:
@@ -53,11 +55,10 @@ class SyncService:
 
             document = self.document_builder.build(book)
 
-            markdown_path = self.markdown_publisher.publish(document)
-            print(f"✅ Markdown: {markdown_path}")
-
-            craft_document = self.craft_publisher.publish(document)
-            print(f"✅ Craft: {craft_document['title']}")
+            for publisher in self.publishers:
+                result = publisher.publish(document)
+                publisher_name = publisher.__class__.__name__
+                print(f"✅ {publisher_name}: {result}")
 
         self.sync_state.mark_successful_sync(sync_started_at)
 

@@ -1,5 +1,4 @@
 from datetime import datetime, timezone
-from pathlib import Path
 from unittest.mock import Mock, call, patch
 
 import pytest
@@ -56,8 +55,7 @@ def test_first_sync_with_no_books_updates_state(
     readwise_client.get_books.return_value = []
 
     document_builder = Mock()
-    markdown_publisher = Mock()
-    craft_publisher = Mock()
+    publisher = Mock()
 
     sync_state = Mock()
     sync_state.get_last_successful_sync.return_value = None
@@ -65,8 +63,9 @@ def test_first_sync_with_no_books_updates_state(
     service = SyncService(
         readwise_client=readwise_client,
         document_builder=document_builder,
-        markdown_publisher=markdown_publisher,
-        craft_publisher=craft_publisher,
+        publishers=[
+            publisher,
+        ],
         sync_state=sync_state,
     )
 
@@ -82,8 +81,7 @@ def test_first_sync_with_no_books_updates_state(
     )
 
     document_builder.build.assert_not_called()
-    markdown_publisher.publish.assert_not_called()
-    craft_publisher.publish.assert_not_called()
+    publisher.publish.assert_not_called()
 
     output = capsys.readouterr().out
 
@@ -124,8 +122,9 @@ def test_incremental_sync_with_no_books_uses_last_successful_date(
     service = SyncService(
         readwise_client=readwise_client,
         document_builder=Mock(),
-        markdown_publisher=Mock(),
-        craft_publisher=Mock(),
+        publishers=[
+            Mock(),
+        ],
         sync_state=sync_state,
     )
 
@@ -192,23 +191,8 @@ def test_processes_and_publishes_all_changed_books(
         second_document,
     ]
 
-    markdown_publisher = Mock()
-    markdown_publisher.publish.side_effect = [
-        Path("summaries/Atomic Habits.md"),
-        Path("summaries/Deep Work.md"),
-    ]
-
-    craft_publisher = Mock()
-    craft_publisher.publish.side_effect = [
-        {
-            "id": "craft-1",
-            "title": "Atomic Habits",
-        },
-        {
-            "id": "craft-2",
-            "title": "Deep Work",
-        },
-    ]
+    first_publisher = Mock()
+    second_publisher = Mock()
 
     sync_state = Mock()
     sync_state.get_last_successful_sync.return_value = last_successful_sync
@@ -216,8 +200,10 @@ def test_processes_and_publishes_all_changed_books(
     service = SyncService(
         readwise_client=readwise_client,
         document_builder=document_builder,
-        markdown_publisher=markdown_publisher,
-        craft_publisher=craft_publisher,
+        publishers=[
+            first_publisher,
+            second_publisher,
+        ],
         sync_state=sync_state,
     )
 
@@ -234,12 +220,12 @@ def test_processes_and_publishes_all_changed_books(
         call(second_book),
     ]
 
-    assert markdown_publisher.publish.call_args_list == [
+    assert first_publisher.publish.call_args_list == [
         call(first_document),
         call(second_document),
     ]
 
-    assert craft_publisher.publish.call_args_list == [
+    assert second_publisher.publish.call_args_list == [
         call(first_document),
         call(second_document),
     ]
@@ -254,6 +240,51 @@ def test_processes_and_publishes_all_changed_books(
     assert "[1/2] Atomic Habits" in output
     assert "[2/2] Deep Work" in output
     assert "Sincronización completada correctamente" in output
+
+
+@patch("kindle_summary_agent.services.sync.datetime")
+def test_uses_only_configured_publishers(
+    mock_datetime: Mock,
+) -> None:
+    sync_started_at = datetime(
+        2026,
+        7,
+        30,
+        16,
+        0,
+        tzinfo=timezone.utc,
+    )
+    mock_datetime.now.return_value = sync_started_at
+
+    book = create_book()
+    document = create_document(book)
+
+    readwise_client = Mock()
+    readwise_client.get_books.return_value = [
+        book,
+    ]
+
+    document_builder = Mock()
+    document_builder.build.return_value = document
+
+    selected_publisher = Mock()
+
+    sync_state = Mock()
+    sync_state.get_last_successful_sync.return_value = None
+
+    service = SyncService(
+        readwise_client=readwise_client,
+        document_builder=document_builder,
+        publishers=[
+            selected_publisher,
+        ],
+        sync_state=sync_state,
+    )
+
+    result = service.run()
+
+    assert result == 1
+    selected_publisher.publish.assert_called_once_with(document)
 
 
 @patch("kindle_summary_agent.services.sync.datetime")
@@ -281,14 +312,10 @@ def test_does_not_update_state_when_publishing_fails(
     document_builder = Mock()
     document_builder.build.return_value = document
 
-    markdown_publisher = Mock()
-    markdown_publisher.publish.return_value = Path(
-        "summaries/Atomic Habits.md"
-    )
-
-    craft_publisher = Mock()
-    craft_publisher.publish.side_effect = RuntimeError(
-        "Craft publishing failed"
+    successful_publisher = Mock()
+    failing_publisher = Mock()
+    failing_publisher.publish.side_effect = RuntimeError(
+        "Publishing failed"
     )
 
     sync_state = Mock()
@@ -297,19 +324,21 @@ def test_does_not_update_state_when_publishing_fails(
     service = SyncService(
         readwise_client=readwise_client,
         document_builder=document_builder,
-        markdown_publisher=markdown_publisher,
-        craft_publisher=craft_publisher,
+        publishers=[
+            successful_publisher,
+            failing_publisher,
+        ],
         sync_state=sync_state,
     )
 
     with pytest.raises(
         RuntimeError,
-        match="Craft publishing failed",
+        match="Publishing failed",
     ):
         service.run()
 
     document_builder.build.assert_called_once_with(book)
-    markdown_publisher.publish.assert_called_once_with(document)
-    craft_publisher.publish.assert_called_once_with(document)
+    successful_publisher.publish.assert_called_once_with(document)
+    failing_publisher.publish.assert_called_once_with(document)
 
     sync_state.mark_successful_sync.assert_not_called()
