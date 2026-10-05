@@ -1,10 +1,11 @@
 import argparse
 
+from kindle_summary_agent.app_config import AppConfig
+from kindle_summary_agent.application import build_sync_service
 from kindle_summary_agent.clients.readwise import ReadwiseClient
 from kindle_summary_agent.publishers.craft import CraftPublisher
 from kindle_summary_agent.publishers.markdown import MarkdownPublisher
 from kindle_summary_agent.services.document_builder import BookDocumentBuilder
-from kindle_summary_agent.services.sync import SyncService
 
 
 def create_parser() -> argparse.ArgumentParser:
@@ -47,13 +48,22 @@ def process_book(query: str) -> None:
 
     books = readwise_client.get_books()
 
-    matches = [book for book in books if query.casefold() in book.title.casefold()]
+    matches = [
+        book
+        for book in books
+        if query.casefold() in book.title.casefold()
+    ]
 
     if not matches:
-        raise RuntimeError(f"No se encontró ningún libro que contenga: {query}")
+        raise RuntimeError(
+            f"No se encontró ningún libro que contenga: {query}"
+        )
 
     if len(matches) > 1:
-        titles = "\n".join(f"- {book.title}" for book in matches)
+        titles = "\n".join(
+            f"- {book.title}"
+            for book in matches
+        )
 
         raise RuntimeError(
             "La búsqueda coincide con varios libros. "
@@ -74,20 +84,23 @@ def process_book(query: str) -> None:
     print(f"✅ Markdown generado: {markdown_path}")
 
     craft_document = CraftPublisher().publish(document)
-    print(f"✅ Documento publicado en Craft: {craft_document['title']}")
+    print(
+        "✅ Documento publicado en Craft: "
+        f"{craft_document['title']}"
+    )
 
 
 def run_sync() -> None:
-    readwise_client = ReadwiseClient()
+    config = AppConfig.from_environment()
 
-    if not readwise_client.validate():
+    service = build_sync_service(config)
+
+    if not service.readwise_client.validate():
         raise RuntimeError("Invalid Readwise token")
 
     print("✅ Token de Readwise válido")
 
-    processed_books = SyncService(
-        readwise_client=readwise_client,
-    ).run()
+    processed_books = service.run()
 
     print(f"📚 Libros procesados: {processed_books}")
 
