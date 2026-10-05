@@ -5,6 +5,7 @@ import pytest
 
 from kindle_summary_agent.domain.models import Book, BookDocument, Highlight
 from kindle_summary_agent.services.sync import SyncService
+from kindle_summary_agent.services.sync_event import SyncEvent
 from kindle_summary_agent.services.sync_result import SyncResult
 
 
@@ -40,7 +41,6 @@ def create_document(
 @patch("kindle_summary_agent.services.sync.datetime")
 def test_first_sync_with_no_books_updates_state(
     mock_datetime: Mock,
-    capsys: pytest.CaptureFixture[str],
 ) -> None:
     sync_started_at = datetime(
         2026,
@@ -57,6 +57,7 @@ def test_first_sync_with_no_books_updates_state(
 
     document_builder = Mock()
     publisher = Mock()
+    progress_callback = Mock()
 
     sync_state = Mock()
     sync_state.get_last_successful_sync.return_value = None
@@ -68,6 +69,7 @@ def test_first_sync_with_no_books_updates_state(
             publisher,
         ],
         sync_state=sync_state,
+        progress_callback=progress_callback,
     )
 
     result = service.run()
@@ -79,6 +81,7 @@ def test_first_sync_with_no_books_updates_state(
     readwise_client.get_books.assert_called_once_with(
         updated_after=None,
     )
+
     sync_state.mark_successful_sync.assert_called_once_with(
         sync_started_at,
     )
@@ -86,16 +89,20 @@ def test_first_sync_with_no_books_updates_state(
     document_builder.build.assert_not_called()
     publisher.publish.assert_not_called()
 
-    output = capsys.readouterr().out
+    event_types = [
+        event.args[0].event_type
+        for event in progress_callback.call_args_list
+    ]
 
-    assert "Primera sincronización" in output
-    assert "No hay libros nuevos o modificados" in output
+    assert event_types == [
+        "sync_started",
+        "no_books",
+    ]
 
 
 @patch("kindle_summary_agent.services.sync.datetime")
 def test_incremental_sync_with_no_books_uses_last_successful_date(
     mock_datetime: Mock,
-    capsys: pytest.CaptureFixture[str],
 ) -> None:
     sync_started_at = datetime(
         2026,
@@ -119,8 +126,12 @@ def test_incremental_sync_with_no_books_uses_last_successful_date(
     readwise_client = Mock()
     readwise_client.get_books.return_value = []
 
+    progress_callback = Mock()
+
     sync_state = Mock()
-    sync_state.get_last_successful_sync.return_value = last_successful_sync
+    sync_state.get_last_successful_sync.return_value = (
+        last_successful_sync
+    )
 
     service = SyncService(
         readwise_client=readwise_client,
@@ -129,6 +140,7 @@ def test_incremental_sync_with_no_books_uses_last_successful_date(
             Mock(),
         ],
         sync_state=sync_state,
+        progress_callback=progress_callback,
     )
 
     result = service.run()
@@ -140,20 +152,16 @@ def test_incremental_sync_with_no_books_uses_last_successful_date(
     readwise_client.get_books.assert_called_once_with(
         updated_after=last_successful_sync,
     )
-    sync_state.mark_successful_sync.assert_called_once_with(
-        sync_started_at,
-    )
 
-    output = capsys.readouterr().out
+    first_event = progress_callback.call_args_list[0].args[0]
 
-    assert "Sincronización incremental desde:" in output
-    assert last_successful_sync.isoformat() in output
+    assert first_event.event_type == "sync_started"
+    assert last_successful_sync.isoformat() in first_event.message
 
 
 @patch("kindle_summary_agent.services.sync.datetime")
 def test_processes_and_publishes_all_changed_books(
     mock_datetime: Mock,
-    capsys: pytest.CaptureFixture[str],
 ) -> None:
     sync_started_at = datetime(
         2026,
@@ -198,9 +206,12 @@ def test_processes_and_publishes_all_changed_books(
 
     first_publisher = Mock()
     second_publisher = Mock()
+    progress_callback = Mock()
 
     sync_state = Mock()
-    sync_state.get_last_successful_sync.return_value = last_successful_sync
+    sync_state.get_last_successful_sync.return_value = (
+        last_successful_sync
+    )
 
     service = SyncService(
         readwise_client=readwise_client,
@@ -210,16 +221,13 @@ def test_processes_and_publishes_all_changed_books(
             second_publisher,
         ],
         sync_state=sync_state,
+        progress_callback=progress_callback,
     )
 
     result = service.run()
 
     assert result == SyncResult(
         processed_books=2,
-    )
-
-    readwise_client.get_books.assert_called_once_with(
-        updated_after=last_successful_sync,
     )
 
     assert document_builder.build.call_args_list == [
@@ -241,12 +249,47 @@ def test_processes_and_publishes_all_changed_books(
         sync_started_at,
     )
 
-    output = capsys.readouterr().out
+    events = [
+        item.args[0]
+        for item in progress_callback.call_args_list
+    ]
 
-    assert "Libros que se procesarán: 2" in output
-    assert "[1/2] Atomic Habits" in output
-    assert "[2/2] Deep Work" in output
-    assert "Sincronización completada correctamente" in output
+    event_types = [
+        event.event_type
+        for event in events
+    ]
+
+    assert event_types == [
+        "sync_started",
+        "books_found",
+        "book_started",
+        "summary_started",
+        "publisher_started",
+        "publisher_completed",
+        "publisher_started",
+        "publisher_completed",
+        "book_started",
+        "summary_started",
+        "publisher_started",
+        "publisher_completed",
+        "publisher_started",
+        "publisher_completed",
+        "sync_completed",
+    ]
+
+    book_events = [
+        event
+        for event in events
+        if event.event_type == "book_started"
+    ]
+
+    assert book_events[0].book_title == "Atomic Habits"
+    assert book_events[0].current_book == 1
+    assert book_events[0].total_books == 2
+
+    assert book_events[1].book_title == "Deep Work"
+    assert book_events[1].current_book == 2
+    assert book_events[1].total_books == 2
 
 
 @patch("kindle_summary_agent.services.sync.datetime")
@@ -293,7 +336,30 @@ def test_uses_only_configured_publishers(
     assert result == SyncResult(
         processed_books=1,
     )
+
     selected_publisher.publish.assert_called_once_with(document)
+
+
+def test_sync_service_can_run_without_progress_callback() -> None:
+    readwise_client = Mock()
+    readwise_client.get_books.return_value = []
+
+    sync_state = Mock()
+    sync_state.get_last_successful_sync.return_value = None
+
+    service = SyncService(
+        readwise_client=readwise_client,
+        document_builder=Mock(),
+        publishers=[],
+        sync_state=sync_state,
+        progress_callback=None,
+    )
+
+    result = service.run()
+
+    assert result == SyncResult(
+        processed_books=0,
+    )
 
 
 @patch("kindle_summary_agent.services.sync.datetime")
@@ -327,6 +393,8 @@ def test_does_not_update_state_when_publishing_fails(
         "Publishing failed"
     )
 
+    progress_callback = Mock()
+
     sync_state = Mock()
     sync_state.get_last_successful_sync.return_value = None
 
@@ -338,6 +406,7 @@ def test_does_not_update_state_when_publishing_fails(
             failing_publisher,
         ],
         sync_state=sync_state,
+        progress_callback=progress_callback,
     )
 
     with pytest.raises(

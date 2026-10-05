@@ -6,6 +6,7 @@ from kindle_summary_agent.clients.readwise import ReadwiseClient
 from kindle_summary_agent.publishers.craft import CraftPublisher
 from kindle_summary_agent.publishers.markdown import MarkdownPublisher
 from kindle_summary_agent.services.document_builder import BookDocumentBuilder
+from kindle_summary_agent.services.sync_event import SyncEvent
 
 
 def create_parser() -> argparse.ArgumentParser:
@@ -38,6 +39,10 @@ def create_parser() -> argparse.ArgumentParser:
     )
 
     return parser
+
+
+def print_sync_event(event: SyncEvent) -> None:
+    print(event.message)
 
 
 def process_book(query: str) -> None:
@@ -93,7 +98,10 @@ def process_book(query: str) -> None:
 def run_sync() -> None:
     config = AppConfig.from_environment()
 
-    service = build_sync_service(config)
+    service = build_sync_service(
+        config,
+        progress_callback=print_sync_event,
+    )
 
     if not service.readwise_client.validate():
         raise RuntimeError("Invalid Readwise token")

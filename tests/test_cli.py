@@ -3,8 +3,10 @@ from unittest.mock import Mock, patch
 from kindle_summary_agent.app_config import AppConfig
 from kindle_summary_agent.cli import (
     create_parser,
+    print_sync_event,
     run_sync,
 )
+from kindle_summary_agent.services.sync_event import SyncEvent
 from kindle_summary_agent.services.sync_result import SyncResult
 
 
@@ -33,6 +35,21 @@ def test_parser_accepts_book_command_with_query() -> None:
 
     assert arguments.command == "book"
     assert arguments.query == "Atomic Habits"
+
+
+def test_print_sync_event_prints_message(
+    capsys,
+) -> None:
+    event = SyncEvent(
+        event_type="test",
+        message="Test progress message",
+    )
+
+    print_sync_event(event)
+
+    output = capsys.readouterr().out
+
+    assert "Test progress message" in output
 
 
 @patch("kindle_summary_agent.cli.build_sync_service")
@@ -66,7 +83,12 @@ def test_run_sync_uses_shared_application_assembly(
     run_sync()
 
     mock_from_environment.assert_called_once_with()
-    mock_build_sync_service.assert_called_once_with(config)
+
+    mock_build_sync_service.assert_called_once_with(
+        config,
+        progress_callback=print_sync_event,
+    )
+
     service.readwise_client.validate.assert_called_once_with()
     service.run.assert_called_once_with()
 

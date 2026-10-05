@@ -154,7 +154,12 @@ def test_build_sync_service_assembles_application(
     ]
     mock_build_publishers.return_value = publishers
 
-    result = build_sync_service(config)
+    progress_callback = Mock()
+
+    result = build_sync_service(
+        config,
+        progress_callback=progress_callback,
+    )
 
     mock_readwise_client_class.assert_called_once_with(
         token="readwise-token",
@@ -178,6 +183,7 @@ def test_build_sync_service_assembles_application(
         readwise_client=mock_readwise_client_class.return_value,
         document_builder=mock_document_builder_class.return_value,
         publishers=publishers,
+        progress_callback=progress_callback,
     )
 
     assert result is mock_sync_service_class.return_value
