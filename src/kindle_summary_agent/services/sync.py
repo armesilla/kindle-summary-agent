@@ -5,6 +5,7 @@ from kindle_summary_agent.publishers.base import Publisher
 from kindle_summary_agent.publishers.craft import CraftPublisher
 from kindle_summary_agent.publishers.markdown import MarkdownPublisher
 from kindle_summary_agent.services.document_builder import BookDocumentBuilder
+from kindle_summary_agent.services.sync_result import SyncResult
 from kindle_summary_agent.services.sync_state import SyncState
 
 
@@ -29,7 +30,7 @@ class SyncService:
 
         self.sync_state = sync_state or SyncState()
 
-    def run(self) -> int:
+    def run(self) -> SyncResult:
         sync_started_at = datetime.now(timezone.utc)
         last_successful_sync = self.sync_state.get_last_successful_sync()
 
@@ -48,7 +49,10 @@ class SyncService:
         if not books:
             print("✅ No hay libros nuevos o modificados")
             self.sync_state.mark_successful_sync(sync_started_at)
-            return 0
+
+            return SyncResult(
+                processed_books=0,
+            )
 
         print(f"📚 Libros que se procesarán: {len(books)}")
 
@@ -70,4 +74,6 @@ class SyncService:
         print()
         print("✅ Sincronización completada correctamente")
 
-        return len(books)
+        return SyncResult(
+            processed_books=len(books),
+        )

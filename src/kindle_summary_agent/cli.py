@@ -100,9 +100,9 @@ def run_sync() -> None:
 
     print("✅ Token de Readwise válido")
 
-    processed_books = service.run()
+    result = service.run()
 
-    print(f"📚 Libros procesados: {processed_books}")
+    print(f"📚 Libros procesados: {result.processed_books}")
 
 
 def main() -> None:

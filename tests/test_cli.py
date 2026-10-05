@@ -5,6 +5,7 @@ from kindle_summary_agent.cli import (
     create_parser,
     run_sync,
 )
+from kindle_summary_agent.services.sync_result import SyncResult
 
 
 def test_parser_accepts_sync_command() -> None:
@@ -56,7 +57,9 @@ def test_run_sync_uses_shared_application_assembly(
 
     service = Mock()
     service.readwise_client.validate.return_value = True
-    service.run.return_value = 2
+    service.run.return_value = SyncResult(
+        processed_books=2,
+    )
 
     mock_build_sync_service.return_value = service
 

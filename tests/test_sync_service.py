@@ -5,6 +5,7 @@ import pytest
 
 from kindle_summary_agent.domain.models import Book, BookDocument, Highlight
 from kindle_summary_agent.services.sync import SyncService
+from kindle_summary_agent.services.sync_result import SyncResult
 
 
 def create_book(
@@ -71,7 +72,9 @@ def test_first_sync_with_no_books_updates_state(
 
     result = service.run()
 
-    assert result == 0
+    assert result == SyncResult(
+        processed_books=0,
+    )
 
     readwise_client.get_books.assert_called_once_with(
         updated_after=None,
@@ -130,7 +133,9 @@ def test_incremental_sync_with_no_books_uses_last_successful_date(
 
     result = service.run()
 
-    assert result == 0
+    assert result == SyncResult(
+        processed_books=0,
+    )
 
     readwise_client.get_books.assert_called_once_with(
         updated_after=last_successful_sync,
@@ -209,7 +214,9 @@ def test_processes_and_publishes_all_changed_books(
 
     result = service.run()
 
-    assert result == 2
+    assert result == SyncResult(
+        processed_books=2,
+    )
 
     readwise_client.get_books.assert_called_once_with(
         updated_after=last_successful_sync,
@@ -283,7 +290,9 @@ def test_uses_only_configured_publishers(
 
     result = service.run()
 
-    assert result == 1
+    assert result == SyncResult(
+        processed_books=1,
+    )
     selected_publisher.publish.assert_called_once_with(document)
 
 
