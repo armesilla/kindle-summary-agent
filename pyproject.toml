@@ -44,6 +44,9 @@ dev = [
   "pytest",
   "ruff",
 ]
+desktop = [
+  "PySide6",
+]
 
 [project.scripts]
 kindle-summary-agent = "kindle_summary_agent.cli:main"
